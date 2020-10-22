@@ -1,0 +1,112 @@
+package ch12;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Vector;
+
+public class GraphicDrawlineTest extends JFrame {
+	public GraphicDrawlineTest() {
+		setTitle("마우스로 선 그리기 예제");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// 리스너 등록 방법2: MyPanel 객체 생성 후 그 객체에 리스너 클래스 등록 방법
+		// MyPanel mp = new MyPanel();
+		// mp.addMouseListener(.......);
+		setContentPane(new MyPanel());
+		
+		setSize(500,500);
+		setVisible(true);
+	}
+	class Line{
+		int x1,y1,x2,y2;
+		public Line(int a, int b, int c, int d) {
+			x1 = a; y1 = b; x2 = c; y2 = d;
+		}
+	}
+	class MyPanel extends JPanel {
+		private int x1, y1, x2, y2;
+		
+		// 여러개를 그리기 위해서 vector배열을 사용함
+		private Vector<Point> vStart = new Vector<Point>();
+		private Vector<Point> vEnd = new Vector<Point>();
+		private Vector<Line> vLine = new Vector<Line>();
+		
+		// 리스너 등록 방법1: MyPanel 생성자 안에서 등록하는 법
+		public MyPanel() {
+			MyAdapter ma = new MyAdapter();
+			
+			this.addMouseListener(ma);
+			this.addMouseMotionListener(ma);
+			
+		}
+		
+		class MyAdapter extends MouseAdapter {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// 시작 좌표를 저장
+				x1 = e.getX();
+				y1 = e.getY();
+				vStart.add(e.getPoint());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// 종료 좌표를 저장
+				x2 = e.getX();
+				y2 = e.getY();
+				
+				vEnd.add(e.getPoint());
+				
+				vLine.add(new Line(x1,y1,x2,y2));
+				
+				// 이거 없으면 아예 그려지지 않음!!
+				repaint();
+			}
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// 종료 좌표를 저장
+				x2 = e.getX();
+				y2 = e.getY();
+				
+				// 이거 없으면 아예 그려지지 않음!!
+				repaint();
+			}
+		}
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			// 그림 그리기 작업(필요한 좌표, 크기, 등등의 정보)
+			for(int i=0; i<vStart.size(); i++) {
+				//Point s = vStart.elementAt(i);
+				//Point e = vEnd.elementAt(i);
+				//g.drawLine((int)s.getX(), (int)s.getY(), 
+				//		(int)e.getX(), (int)e.getY());
+				Line l = vLine.elementAt(i);
+				g.drawLine(l.x1, l.y1, l.x2, l.y2);
+			}
+			
+			g.drawLine(x1, y1, x2, y2);
+			g.drawRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2-x1), Math.abs(y2-y1));
+		
+			int w = getWidth()/10;
+			for(int i=1; i<=9; i++) {
+				g.drawLine(i*w, 0, i*w, getHeight());
+			}
+			
+			int h = getWidth()/10;
+			for(int i=1; i<=9; i++) {
+				g.drawLine(0, i*h, getWidth(), i*h);
+			}
+		
+		}
+		
+	}
+
+	public static void main(String[] args) {
+		new GraphicDrawlineTest();
+	}
+
+}

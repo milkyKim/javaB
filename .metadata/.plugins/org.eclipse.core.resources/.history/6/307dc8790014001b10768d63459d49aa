@@ -1,0 +1,23 @@
+package ch13;
+
+// 스레드 클래스 작성
+class MyThread extends Thread{
+
+	@Override
+	public void run() {
+		int n=0;
+		for(int i=0; i<10; i++) {
+			System.out.println("숫자: "+i);
+		}
+	}
+	
+}
+
+public class TestThread {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
